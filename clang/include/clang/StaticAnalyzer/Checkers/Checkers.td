@@ -611,6 +611,11 @@ def PthreadLockChecker : Checker<"PthreadLock">,
   Dependencies<[PthreadLockBase]>,
   Documentation<HasDocumentation>;
 
+def PthreadCreateChecker : Checker<"PthreadCreate">,
+    HelpText<"Prevent pthreads from escaping analysis">,
+    Documentation<NotDocumented>;
+    // DescFile<"PthreadCreateChecker.cpp">;
+
 def SimpleStreamChecker : Checker<"SimpleStream">,
   HelpText<"Check for misuses of stream APIs">,
   Documentation<HasDocumentation>;
