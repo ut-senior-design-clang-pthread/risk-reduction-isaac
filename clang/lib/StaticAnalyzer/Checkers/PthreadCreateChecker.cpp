@@ -20,9 +20,29 @@ using namespace clang;
 using namespace ento;
 
 class PthreadCreateChecker : public Checker<check::PostCall> {
+  const CallDescription CreateFN{ CDM::CLibrary, {"pthread_create"}, 4 };
+public:
+  void checkPostCall(const CallEvent &Call, CheckerContext &C) const;
 };
+
+void PthreadCreateChecker::checkPostCall(const CallEvent &Call,
+                                         CheckerContext &C) const {
+  if (!CreateFN.matches(Call))
+    return;
+
+  // Get the symbolic value corresponding to the file handle.
+  SymbolRef FileDesc = Call.getReturnValue().getAsSymbol();
+  if (!FileDesc)
+    return;
+
+  llvm::errs() << "Found pthread_create(3) call in " << FileDesc << "\n";
+}
 
 
 void ento::registerPthreadCreateChecker(CheckerManager &mgr) {
   mgr.registerChecker<PthreadCreateChecker>();
+}
+
+bool ento::shouldRegisterPthreadCreateChecker(const CheckerManager &mgr) {
+  return true;
 }
